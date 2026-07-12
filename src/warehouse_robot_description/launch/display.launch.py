@@ -25,6 +25,25 @@ def generate_launch_description():
         parameters=[{'robot_description': robot_description}]
     )
 
+    joint_state_publisher_gui_node = Node(
+        package='joint_state_publisher_gui',
+        executable='joint_state_publisher_gui',
+        name='joint_state_publisher_gui',
+        output='screen'
+    )
+
+    rviz_config_path = os.path.join(pkg_share, 'rviz', 'display.rviz')
+
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', rviz_config_path]
+    )
+
     return LaunchDescription([
-        robot_state_publisher_node
+        robot_state_publisher_node,
+        joint_state_publisher_gui_node,
+        rviz_node
     ])
