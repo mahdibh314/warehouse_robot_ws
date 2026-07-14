@@ -57,9 +57,30 @@ def generate_launch_description():
         ],
         output='screen'
     )
+
+    camera_bridge_node = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/image_raw@sensor_msgs/msg/Image@gz.msgs.Image'
+        ],
+        output='screen'
+    )
+
+    imu_bridge_node = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/imu@sensor_msgs/msg/Imu@gz.msgs.IMU'
+        ],
+        output='screen'
+    )
+
     return LaunchDescription([
         gazebo,
         robot_state_publisher_node,
         spawn_robot_node,
-        lidar_bridge_node
+        lidar_bridge_node,
+        camera_bridge_node,
+        imu_bridge_node
     ])
