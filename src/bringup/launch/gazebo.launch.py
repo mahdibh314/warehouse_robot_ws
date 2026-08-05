@@ -76,11 +76,31 @@ def generate_launch_description():
         output='screen'
     )
 
+    cmd_vel_bridge_node = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist'
+        ],
+        output='screen'
+    )
+
+    odom_bridge_node = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/odom@nav_msgs/msg/Odometry@gz.msgs.Odometry'
+        ],
+        output='screen'
+    )
+
     return LaunchDescription([
         gazebo,
         robot_state_publisher_node,
         spawn_robot_node,
         lidar_bridge_node,
         camera_bridge_node,
-        imu_bridge_node
+        imu_bridge_node,
+        cmd_vel_bridge_node,
+        odom_bridge_node
     ])
