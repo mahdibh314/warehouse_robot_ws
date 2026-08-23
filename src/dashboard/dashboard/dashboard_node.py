@@ -3,6 +3,7 @@ import threading
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
 
 from fastapi import FastAPI
 import uvicorn
@@ -15,6 +16,10 @@ class DashboardNode(Node):
         self.current_linear = 0.0
         self.current_angular = 0.0
         self.timer = self.create_timer(0.1, self.publish_velocity)
+        self.subscription = self.create_subscription(
+            Odometry, '/odom', self.odom_callback, 10
+        )
+        self.last_position = {'x': 0.0, 'y': 0.0}
         self.get_logger().info('Dashboard node started')
 
     def set_velocity(self, linear_x, angular_z):
@@ -27,7 +32,9 @@ class DashboardNode(Node):
         msg.angular.z = self.current_angular
         self.cmd_vel_publisher.publish(msg)
 
-
+    def odom_callback(self, msg):
+        self.last_position['x'] = msg.pose.pose.position.x
+        self.last_position['y'] = msg.pose.pose.position.y
 ros_node = None
 app = FastAPI()
 
@@ -48,6 +55,9 @@ def stop():
     ros_node.set_velocity(0.0, 0.0)
     return {'status': 'stopped'}
 
+@app.get('/status')
+def status():
+    return {'position': ros_node.last_position}
 
 def ros_spin_thread():
     rclpy.spin(ros_node)
@@ -69,3 +79,4 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
