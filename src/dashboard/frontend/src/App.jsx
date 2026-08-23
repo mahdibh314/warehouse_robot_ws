@@ -38,6 +38,12 @@ function App() {
         <button onClick={refreshStatus}>Rafraîchir position</button>
         <p>Position : x = {position.x.toFixed(2)}, y = {position.y.toFixed(2)}</p>
       </div>
+
+      <div>
+        <h2>Caméra en direct</h2>
+        <img src={`${API_URL}/video_feed`} alt="Flux caméra du robot" width="640" />
+      </div>
+
     </div>
   )
 }
