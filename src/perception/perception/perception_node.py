@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
+from geometry_msgs.msg import Point
 import cv2
 import numpy as np
 
@@ -13,6 +14,7 @@ class PerceptionNode(Node):
         self.subscription = self.create_subscription(
             Image, '/image_raw', self.image_callback, 10
         )
+        self.detection_publisher = self.create_publisher(Point, '/detected_object', 10)
         self.get_logger().info('Perception node started')
 
     def image_callback(self, msg):
@@ -34,10 +36,16 @@ class PerceptionNode(Node):
                 x, y, w, h = cv2.boundingRect(largest_contour)
                 center_x = x + w // 2
                 center_y = y + h // 2
+
+                point_msg = Point()
+                point_msg.x = float(center_x)
+                point_msg.y = float(center_y)
+                point_msg.z = float(area)
+                self.detection_publisher.publish(point_msg)
+
                 self.get_logger().info(
                     f'Red object detected at pixel ({center_x}, {center_y}), area={int(area)}'
                 )
-
 
 def main(args=None):
     rclpy.init(args=args)
